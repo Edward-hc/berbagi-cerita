@@ -1,21 +1,23 @@
+const path = require('path');
 const common = require('./webpack.common.js');
 const { merge } = require('webpack-merge');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin'); // ← tambahkan ini
 
 module.exports = merge(common, {
   mode: 'production',
   module: {
     rules: [
       {
-        test: /\.css$/,
+        test: /\.css$/i,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
         ],
       },
       {
-        test: /\.js$/,
+        test: /\.js$/i,
         exclude: /node_modules/,
         use: [
           {
@@ -31,5 +33,10 @@ module.exports = merge(common, {
   plugins: [
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, 'public/_redirects'), to: '' }
+      ],
+    }),
   ],
 });
