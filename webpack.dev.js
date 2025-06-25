@@ -16,13 +16,21 @@ module.exports = merge(common, {
     ],
   },
   devServer: {
-    static: path.resolve(__dirname, 'dist'),
-    port: 9000,
-    client: {
-      overlay: {
-        errors: true,
-        warnings: true,
-      },
+    static: {
+      directory: path.resolve(__dirname, 'dist'),
     },
+    port: 9000,
+    hot: false,
+    liveReload: true,
+    open: true,
+    proxy: [
+      {
+        context: ['/v1'],
+        target: 'https://story-api.dicoding.dev',
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: { '^/v1': '/v1' },
+      },
+    ],
   },
 });

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.register('sw.js');
+      const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('[SW] Terdaftar:', registration);
     } catch (err) {
       console.error('[SW] Gagal daftar:', err);

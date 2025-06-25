@@ -152,13 +152,19 @@ const AddStoryPage = {
       try {
         await AddPresenter.uploadStory(formData, token);
         alert('Cerita berhasil ditambahkan!');
-        await CeritaDB.simpanCeritaOffline({
-          description,
-          lat,
-          lon,
-          photo: capturedImageBlob ? await blobToBase64(capturedImageBlob) : await blobToBase64(photo),
-          date: new Date().toISOString(),
-        });
+
+        const simpan = confirm('Apakah Anda ingin menyimpan cerita ini secara offline?');
+        if (simpan) {
+          await CeritaDB.simpanCeritaOffline({
+            description,
+            lat,
+            lon,
+            photo: capturedImageBlob ? await blobToBase64(capturedImageBlob) : await blobToBase64(photo),
+            date: new Date().toISOString(),
+          });
+          alert('Cerita berhasil disimpan offline!');
+        }
+
         window.location.hash = '/';
       } catch (error) {
         alert('Gagal menambahkan cerita: ' + error.message);
