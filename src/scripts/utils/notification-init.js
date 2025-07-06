@@ -9,8 +9,7 @@ export async function initPushNotification() {
   if (!('serviceWorker' in navigator)) return;
 
   try {
-    const registration = await navigator.serviceWorker.register('/sw.js');
-    console.log('Service worker registered:', registration);
+    const registration = await navigator.serviceWorker.ready;
 
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
@@ -21,30 +20,27 @@ export async function initPushNotification() {
     const vapidPublicKey = 'BALFplDw4UjFe-eBDtpRYQiID0ZQ8RiRnl0vLMdf1yxfii4cO6dPlCjr6WgWfEX6KGTux9tOHQI_j0fSH-Mh38o';
     const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
-    // Cek jika sudah ada subscription
     const existingSubscription = await registration.pushManager.getSubscription();
     if (existingSubscription) {
       const existingKey = existingSubscription.options.applicationServerKey;
       const existingKeyString = btoa(String.fromCharCode(...new Uint8Array(existingKey || [])));
       const newKeyString = btoa(String.fromCharCode(...convertedVapidKey));
 
-      if (existingKeyString !== newKeyString) {
-        console.log('Unsubscribing existing push...');
-        await existingSubscription.unsubscribe();
-      } else {
+      if (existingKeyString === newKeyString) {
         console.log('Push already subscribed.');
         return;
       }
+
+      console.log('Unsubscribing existing push...');
+      await existingSubscription.unsubscribe();
     }
 
-    // Buat subscription baru
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: convertedVapidKey
     });
 
-    // Kirim ke server
-    await fetch('http://localhost:3000/save-subscription', {
+    await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

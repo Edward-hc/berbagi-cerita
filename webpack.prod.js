@@ -5,6 +5,14 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const { InjectManifest } = require('workbox-webpack-plugin');
+
+plugins: [
+  new InjectManifest({
+    swSrc: './src/sw.js',
+    swDest: 'sw.js',
+  })
+]
 
 module.exports = merge(common, {
   mode: 'production',
