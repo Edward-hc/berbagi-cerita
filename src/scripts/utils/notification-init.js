@@ -17,7 +17,7 @@ export async function initPushNotification() {
       return;
     }
 
-    const vapidPublicKey = 'BALFplDw4UjFe-eBDtpRYQiID0ZQ8RiRnl0vLMdf1yxfii4cO6dPlCjr6WgWfEX6KGTux9tOHQI_j0fSH-Mh38o';
+    const vapidPublicKey = 'BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk';
     const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
     const existingSubscription = await registration.pushManager.getSubscription();
@@ -40,12 +40,27 @@ export async function initPushNotification() {
       applicationServerKey: convertedVapidKey
     });
 
+    const subscriptionJSON = subscription.toJSON();
+
     await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify(subscription),
+      body: JSON.stringify({
+
+        endpoint: subscriptionJSON.endpoint,
+
+        keys: {
+
+          auth: subscriptionJSON.keys.auth,
+
+          p256dh: subscriptionJSON.keys.p256dh,
+
+        }
+
+      }),
     });
 
     console.log('Push subscribed:', subscription);
